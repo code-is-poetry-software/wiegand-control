@@ -1,0 +1,21 @@
+{
+  "name": "wiegand-control",
+  "version": "0.1.0",
+  "description": "Communicate with wiegand door access controller.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "wiegand",
+    "微耕",
+    "门禁"
+  ],
+  "author": "Uice Lu",
+  "license": "MIT",
+  "dependencies": {
+    "@types/moment-timezone": "^0.5.12",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.26"
+  }
+}
