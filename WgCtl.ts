@@ -11,11 +11,14 @@ export default class WgCtl {
   localSocket?: UdpSocket;
   remoteSocket?: TcpSocket;
   detected: Promise<boolean>;
-  serverPort = 6000;
+  serverIp?: string;
+  serverPort?: number;
 
   constructor(
     socket: TcpSocket | UdpSocket,
     serial: number,
+    serverIp?: string,
+    serverPort?: number,
     ip = "",
     port = 60000
   ) {
@@ -24,8 +27,14 @@ export default class WgCtl {
     this.serial = serial;
     if (socket instanceof UdpSocket) {
       this.localSocket = socket;
+      // server ip and port only available for local mode
+      this.serverIp = serverIp;
+      this.serverPort = serverPort;
     } else {
       this.remoteSocket = socket;
+      if (this.serverIp || this.serverPort) {
+        throw new Error("Server ip and port only available for local mode.");
+      }
     }
 
     this.detected = Promise.resolve(!!ip);
@@ -37,6 +46,11 @@ export default class WgCtl {
   }
 
   protected async detect() {
+    if (!this.serverIp || !this.serverPort) {
+      throw new Error(
+        "Detect is not available when server ip and port undefined."
+      );
+    }
     this.search();
     this.detected = new Promise((resolve, reject) => {
       if (!this.localSocket) return;
@@ -59,7 +73,7 @@ export default class WgCtl {
       });
     });
     await this.detected;
-    this.setServerAddress("192.168.3.2", this.serverPort);
+    this.setServerAddress(this.serverIp, this.serverPort);
   }
 
   protected packData(funcCode: number, payload?: string | number | Buffer) {
@@ -175,7 +189,7 @@ export default class WgCtl {
     this.sendData(0x54, payload);
   }
 
-  setServerAddress(ip: string, port = 6000, interval = 0) {
+  setServerAddress(ip: string, port: number, interval = 0) {
     const payload = Buffer.alloc(7);
     payload.write(ipToHex(ip), "hex");
     payload.writeUInt16LE(port, 4);
