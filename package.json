@@ -1,11 +1,13 @@
 {
   "name": "wiegand-control",
-  "version": "0.1.1",
+  "version": "0.1.6",
   "description": "Communicate with wiegand door access controller.",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo \"No need to build now.\""
+    "build": "tsc",
+    "prepublish": "yarn build"
   },
   "keywords": [
     "wiegand",
@@ -16,7 +18,11 @@
   "license": "MIT",
   "dependencies": {
     "@types/moment-timezone": "^0.5.12",
+    "@types/node": "^12.6.8",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26"
+  },
+  "devDependencies": {
+    "typescript": "^3.5.3"
   }
 }
