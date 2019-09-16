@@ -199,13 +199,14 @@ export default class WgCtl {
     this.sendData(0x90, payload);
   }
 
-  setControllerAddress(ip: string, subnet: string, gateway: string) {
+  setAddress(ip: string, subnet: string, gateway: string) {
     const payload = Buffer.alloc(16);
     payload.write(ipToHex(ip), "hex");
     payload.write(ipToHex(subnet), 4, "hex");
     payload.write(ipToHex(gateway), 8, "hex");
     payload.write("55aaaa55", 12, "hex");
     this.sendData(0x96, payload);
+    this.ip = "";
   }
 
   getServerAddress() {

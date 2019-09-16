@@ -1,13 +1,13 @@
 {
   "name": "wiegand-control",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Communicate with wiegand door access controller.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "prepublish": "yarn build"
+    "prepare": "yarn build"
   },
   "keywords": [
     "wiegand",
