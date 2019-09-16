@@ -7,7 +7,8 @@ const funcNames: { [code: string]: string } = {
   "0x5A": "GetAuth",
   "0x90": "SetServerIp",
   "0x92": "GetServerIp",
-  "0x94": "Search"
+  "0x94": "Search",
+  "0x96": "SetControllerIp"
 };
 
 export default funcNames;

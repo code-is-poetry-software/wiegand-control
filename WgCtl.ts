@@ -7,7 +7,7 @@ import funcNames from "./funcNames";
 export default class WgCtl {
   ip: string;
   port: number;
-  serial: number;
+  serial?: number;
   localSocket?: UdpSocket;
   remoteSocket?: TcpSocket;
   detected: Promise<boolean>;
@@ -16,7 +16,7 @@ export default class WgCtl {
 
   constructor(
     socket: TcpSocket | UdpSocket,
-    serial: number,
+    serial?: number,
     serverIp?: string,
     serverPort?: number,
     ip = "",
@@ -39,7 +39,7 @@ export default class WgCtl {
 
     this.detected = Promise.resolve(!!ip);
 
-    if (!this.ip && this.localSocket) {
+    if (!this.ip && this.localSocket && this.serial) {
       console.log("[WGC] Controller IP not defined, detecting...");
       this.detect();
     }
@@ -81,7 +81,9 @@ export default class WgCtl {
 
     data.writeUInt8(0x17, 0);
     data.writeUInt8(funcCode, 1);
-    data.writeUInt32LE(this.serial, 4);
+    if (this.serial) {
+      data.writeUInt32LE(this.serial, 4);
+    }
     if (payload) {
       if (isBuffer(payload)) {
         data.fill(payload, 8, 8 + payload.byteLength);
@@ -128,7 +130,7 @@ export default class WgCtl {
     if (!this.ip) {
       this.localSocket.setBroadcast(true);
     }
-
+    console.log(`[WGC] Sending local data to ${this.ip || "255.255.255.255"}.`);
     this.localSocket.send(
       data,
       0,
@@ -195,6 +197,15 @@ export default class WgCtl {
     payload.writeUInt16LE(port, 4);
     payload.writeUInt8(interval, 6);
     this.sendData(0x90, payload);
+  }
+
+  setControllerAddress(ip: string, subnet: string, gateway: string) {
+    const payload = Buffer.alloc(16);
+    payload.write(ipToHex(ip), "hex");
+    payload.write(ipToHex(subnet), 4, "hex");
+    payload.write(ipToHex(gateway), 8, "hex");
+    payload.write("55aaaa55", 12, "hex");
+    this.sendData(0x96, payload);
   }
 
   getServerAddress() {

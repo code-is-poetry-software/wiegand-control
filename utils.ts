@@ -91,6 +91,13 @@ export function payloadParser(funcCode: string, payload: Buffer): any {
         version: +payload.slice(18, 20).toString("hex") / 100,
         release: payload.slice(20, 24).toString("hex")
       };
+    case "0x96":
+      return {
+        funcName: funcNames[funcCode],
+        ip: hexToIp(payload.slice(0, 4).toString("hex")),
+        subNet: hexToIp(payload.slice(4, 8).toString("hex")),
+        gateway: hexToIp(payload.slice(8, 12).toString("hex"))
+      };
     default:
       return {
         funcName: `Unknown (${funcCode})`,
