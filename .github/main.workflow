@@ -1,6 +1,6 @@
 workflow "build and test" {
   on = "push"
-  resolves = ["test", "coverage", "lint"]
+  resolves = ["test"]
 }
 
 workflow "publish on release" {
@@ -23,4 +23,16 @@ action "publish" {
   uses = "actions/npm@master"
   args = "publish"
   secrets = ["NPM_AUTH_TOKEN"]
+}
+
+action "coverage" {
+  needs = "build"
+  uses = "actions/npm@master"
+  args = "run coverage"
+}
+
+action "lint" {
+  needs = "build"
+  uses = "actions/npm@master"
+  args = "run lint"
 }
