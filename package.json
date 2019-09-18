@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"No test specified.\" && exit 0",
     "build": "tsc",
-    "prepare": "yarn build"
+    "prepare": "npm run build"
   },
   "keywords": [
     "wiegand",
