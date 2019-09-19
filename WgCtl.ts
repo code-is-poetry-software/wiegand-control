@@ -67,7 +67,7 @@ export default class WgCtl {
           release: string;
         };
         if (data.serial !== this.serial) return;
-        if (data.ip === "192.168.0.0") {
+        if (data.ip.match(/^192\.168\./)) {
           console.warn(
             `[WGC] Controller ${this.serial} has invalid ip: ${data.ip}, ignored.`
           );
