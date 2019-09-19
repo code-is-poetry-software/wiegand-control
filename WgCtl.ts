@@ -179,15 +179,15 @@ export default class WgCtl {
     this.sendData(0x30, buildBcdDate(date || new Date()));
   }
 
-  setAuth(cardNo: number, door: number) {
+  setAuth(cardNo: number, door?: number) {
     const payload = Buffer.alloc(16);
     payload.writeUInt32LE(cardNo, 0);
     payload.write("20190101", 4, "hex");
     payload.write("20291231", 8, "hex");
-    payload.writeUInt8(door === 1 ? 1 : 0, 12);
-    payload.writeUInt8(door === 2 ? 1 : 0, 13);
-    payload.writeUInt8(door === 3 ? 1 : 0, 14);
-    payload.writeUInt8(door === 4 ? 1 : 0, 15);
+    payload.writeUInt8(door && door !== 1 ? 0 : 1, 12);
+    payload.writeUInt8(door && door !== 2 ? 0 : 1, 13);
+    payload.writeUInt8(door && door !== 3 ? 0 : 1, 14);
+    payload.writeUInt8(door && door !== 4 ? 0 : 1, 15);
     this.sendData(0x50, payload);
   }
 
