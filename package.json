@@ -1,6 +1,6 @@
 {
   "name": "wiegand-control",
-  "version": "0.1.10",
+  "version": "0.1.16",
   "description": "Communicate with wiegand door access controller.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

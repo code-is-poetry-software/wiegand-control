@@ -51,7 +51,9 @@ export default class WgCtl {
         "Detect is not available when server ip and port undefined."
       );
     }
+
     this.search();
+
     this.detected = new Promise((resolve, reject) => {
       if (!this.localSocket) return;
       this.localSocket.once("message", (msg, rinfo) => {
@@ -65,14 +67,27 @@ export default class WgCtl {
           release: string;
         };
         if (data.serial !== this.serial) return;
-        console.log(
-          `[WGC] Controller ${this.serial} detected, ip: ${data.ip}.`
-        );
-        this.ip = data.ip;
+        if (data.ip === "192.168.0.0") {
+          console.warn(
+            `[WGC] Controller ${this.serial} has invalid ip: ${data.ip}, ignored.`
+          );
+          this.ip = "";
+        } else {
+          console.log(
+            `[WGC] Controller ${this.serial} detected, ip: ${data.ip}.`
+          );
+          this.ip = data.ip;
+        }
         resolve(true);
       });
     });
-    await this.detected;
+
+    try {
+      await this.detected;
+    } catch (err) {
+      console.warn(err);
+    }
+
     this.setServerAddress(this.serverIp, this.serverPort);
   }
 
