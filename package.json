@@ -1,6 +1,6 @@
 {
   "name": "wiegand-control",
-  "version": "0.1.20",
+  "version": "1.0.0",
   "description": "Communicate with wiegand door access controller.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,9 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@types/moment-timezone": "^0.5.12",
+    "@types/netmask": "^1.0.30",
     "@types/node": "^12.6.8",
     "moment": "^2.24.0",
-    "moment-timezone": "^0.5.26"
+    "moment-timezone": "^0.5.26",
+    "netmask": "^1.0.6"
   },
   "devDependencies": {
     "typescript": "^3.5.3"

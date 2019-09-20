@@ -3,6 +3,7 @@ import { Socket as TcpSocket } from "net";
 import { isBuffer, isNumber } from "util";
 import { parseData, buildBcdDate, ipToHex } from "./utils";
 import funcNames from "./funcNames";
+import { Netmask } from "netmask";
 
 export default class WgCtl {
   ip: string;
@@ -10,7 +11,6 @@ export default class WgCtl {
   serial?: number;
   localSocket?: UdpSocket;
   remoteSocket?: TcpSocket;
-  detected: Promise<boolean>;
   serverIp?: string;
   serverPort?: number;
 
@@ -36,59 +36,6 @@ export default class WgCtl {
         throw new Error("Server ip and port only available for local mode.");
       }
     }
-
-    this.detected = Promise.resolve(!!ip);
-
-    if (!this.ip && this.localSocket && this.serial) {
-      console.log("[WGC] Controller IP not defined, detecting...");
-      this.detect();
-    }
-  }
-
-  protected async detect() {
-    if (!this.serverIp || !this.serverPort) {
-      throw new Error(
-        "Detect is not available when server ip and port undefined."
-      );
-    }
-
-    this.search();
-
-    this.detected = new Promise((resolve, reject) => {
-      if (!this.localSocket) return;
-      this.localSocket.once("message", (msg, rinfo) => {
-        const data = parseData(msg) as {
-          serial: number;
-          ip: string;
-          subNet: string;
-          gateway: string;
-          mac: string;
-          version: string;
-          release: string;
-        };
-        if (data.serial !== this.serial) return;
-        if (data.ip.match(/^192\.168\./)) {
-          console.warn(
-            `[WGC] Controller ${this.serial} has invalid ip: ${data.ip}, ignored.`
-          );
-          this.ip = "";
-        } else {
-          console.log(
-            `[WGC] Controller ${this.serial} detected, ip: ${data.ip}.`
-          );
-          this.ip = data.ip;
-        }
-        resolve(true);
-      });
-    });
-
-    try {
-      await this.detected;
-    } catch (err) {
-      console.warn(err);
-    }
-
-    this.setServerAddress(this.serverIp, this.serverPort);
   }
 
   protected packData(funcCode: number, payload?: string | number | Buffer) {
@@ -114,7 +61,8 @@ export default class WgCtl {
     const funcCodeStr = `0x${funcCode.toString(16).toUpperCase()}`;
 
     console.log(
-      `[WGC] Func ${funcNames[funcCodeStr]}, payload to send:`,
+      `[WGC] Func ${funcNames[funcCodeStr]}, controller ${this.serial ||
+        "all"}, payload to send:`,
       payload
     );
 
