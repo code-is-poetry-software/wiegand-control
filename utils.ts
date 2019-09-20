@@ -25,6 +25,9 @@ export function payloadParser(funcCode: string, payload: Buffer): any {
       const inOut = payload.readUInt8(7);
       const cardNo = payload.readUInt32LE(8);
       const time = payload.slice(12, 19);
+
+      console.log("[DEBUG] Card No. hex is: ", payload.slice(8, 12));
+
       return {
         funcName: funcNames[funcCode],
         index,
