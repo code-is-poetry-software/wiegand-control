@@ -51,6 +51,11 @@ export function payloadParser(funcCode: string, payload: Buffer): any {
         funcName: funcNames[funcCode],
         success: !!payload.readUInt8(0)
       };
+    case "0x52":
+      return {
+        funcName: funcNames[funcCode],
+        success: !!payload.readUInt8(0)
+      };
     case "0x54":
       return {
         funcName: funcNames[funcCode],
