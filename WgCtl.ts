@@ -140,13 +140,13 @@ export default class WgCtl {
   }
 
   getAuth(cardNo: number) {
-    const payload = Buffer.alloc(56);
+    const payload = Buffer.alloc(4);
     payload.writeUInt32LE(cardNo, 0);
     this.sendData(0x5a, payload);
   }
 
   removeAuth(cardNo: number) {
-    const payload = Buffer.alloc(56);
+    const payload = Buffer.alloc(4);
     payload.writeUInt32LE(cardNo, 0);
     this.sendData(0x52, payload);
   }
