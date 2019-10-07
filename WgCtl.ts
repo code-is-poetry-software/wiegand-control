@@ -1,9 +1,10 @@
 import { Socket as UdpSocket } from "dgram";
 import { Socket as TcpSocket } from "net";
 import { isBuffer, isNumber } from "util";
-import { parseData, buildBcdDate, ipToHex } from "./utils";
+import { buildBcdDate, ipToHex } from "./utils";
 import funcNames from "./funcNames";
-import { Netmask } from "netmask";
+
+const { WGC_HIDE_LOG, WGC_DISABLE_ECHO } = process.env;
 
 export default class WgCtl {
   ip: string;
@@ -60,11 +61,13 @@ export default class WgCtl {
 
     const funcCodeStr = `0x${funcCode.toString(16).toUpperCase()}`;
 
-    console.log(
-      `[WGC] Func ${funcNames[funcCodeStr]}, controller ${this.serial ||
-        "all"}, payload to send:`,
-      payload
-    );
+    if (!WGC_HIDE_LOG) {
+      console.log(
+        `[WGC] Func ${funcNames[funcCodeStr]}, controller ${this.serial ||
+          "all"}, payload to send:`,
+        payload
+      );
+    }
 
     return data;
   }
@@ -88,12 +91,16 @@ export default class WgCtl {
     });
   }
 
-  protected localSendData(data: Buffer) {
+  protected localSendData(data: Buffer, isEcho = false) {
     if (!this.localSocket) return;
     if (!this.ip) {
       this.localSocket.setBroadcast(true);
     }
-    console.log(`[WGC] Sending local data to ${this.ip || "255.255.255.255"}.`);
+    if (!WGC_HIDE_LOG) {
+      console.log(
+        `[WGC] Sending local data to ${this.ip || "255.255.255.255"}.`
+      );
+    }
     this.localSocket.send(
       data,
       0,
@@ -109,6 +116,18 @@ export default class WgCtl {
         }
       }
     );
+
+    if (!isEcho && !WGC_DISABLE_ECHO) {
+      setTimeout(() => {
+        this.localSendData(data, true);
+        setTimeout(() => {
+          this.localSendData(data, true);
+          setTimeout(() => {
+            this.localSendData(data, true);
+          }, 5000);
+        }, 3000);
+      }, 1000);
+    }
   }
 
   search() {
