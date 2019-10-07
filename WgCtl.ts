@@ -124,9 +124,9 @@ export default class WgCtl {
           this.localSendData(data, true);
           setTimeout(() => {
             this.localSendData(data, true);
-          }, 5000);
-        }, 3000);
-      }, 1000);
+          }, 29000);
+        }, 17000);
+      }, 7000);
     }
   }
 
