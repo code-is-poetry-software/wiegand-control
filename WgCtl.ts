@@ -4,7 +4,14 @@ import { isBuffer, isNumber } from "util";
 import { buildBcdDate, ipToHex } from "./utils";
 import funcNames from "./funcNames";
 
-const { WGC_HIDE_LOG, WGC_DISABLE_ECHO } = process.env;
+const { WGC_HIDE_LOG, WGC_ECHO_1, WGC_ECHO_2, WGC_ECHO_3 } = process.env;
+
+const config = {
+  hideLog: !!WGC_HIDE_LOG,
+  echo1: WGC_ECHO_1 ? +WGC_ECHO_1 : 0,
+  echo2: WGC_ECHO_2 ? +WGC_ECHO_2 : 0,
+  echo3: WGC_ECHO_3 ? +WGC_ECHO_3 : 0
+};
 
 export default class WgCtl {
   ip: string;
@@ -61,7 +68,7 @@ export default class WgCtl {
 
     const funcCodeStr = `0x${funcCode.toString(16).toUpperCase()}`;
 
-    if (!WGC_HIDE_LOG) {
+    if (!config.hideLog) {
       console.log(
         `[WGC] Func ${funcNames[funcCodeStr]}, controller ${this.serial ||
           "all"}, payload to send:`,
@@ -117,16 +124,20 @@ export default class WgCtl {
       }
     );
 
-    if (!isEcho && !WGC_DISABLE_ECHO) {
+    if (!isEcho && config.echo1) {
       setTimeout(() => {
         this.localSendData(data, true);
-        setTimeout(() => {
-          this.localSendData(data, true);
+        if (config.echo2) {
           setTimeout(() => {
             this.localSendData(data, true);
-          }, 29000);
-        }, 17000);
-      }, 7000);
+            if (config.echo3) {
+              setTimeout(() => {
+                this.localSendData(data, true);
+              }, +config.echo3);
+            }
+          }, +config.echo2);
+        }
+      }, +config.echo1);
     }
   }
 
