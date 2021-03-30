@@ -21,7 +21,7 @@
     "@types/node": "^12.6.8",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
-    "netmask": "^1.0.6"
+    "netmask": "^2.0.1"
   },
   "devDependencies": {
     "typescript": "^3.5.3"
